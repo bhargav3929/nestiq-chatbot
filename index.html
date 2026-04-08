@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestIQ — AI Real Estate Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest:   #0a3d2e;
+    --pine:     #0f5c42;
+    --leaf:     #1a8a5a;
+    --sage:     #3db87a;
+    --mist:     #c8edd9;
+    --cream:    #f7f4ee;
+    --parchment:#ede9e0;
+    --ink:      #1a1a18;
+    --slate:    #4a5550;
+    --fog:      #9aaca5;
+    --white:    #ffffff;
+    --gold:     #c8a84b;
+    --radius:   16px;
+    --font-head: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    font-family: var(--font-body);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* ── LAYOUT ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: 100vh;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--forest);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 24px;
+    gap: 32px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: var(--pine);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .sidebar::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: var(--pine);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--sage);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .brand-icon svg { width: 22px; height: 22px; }
+
+  .brand-name {
+    font-family: var(--font-head);
+    font-size: 22px;
+    color: var(--white);
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+
+  .brand-tagline {
+    font-size: 11px;
+    color: var(--mist);
+    opacity: 0.7;
+    margin-top: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 6px 12px;
+    width: fit-content;
+    position: relative;
+    z-index: 1;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--sage);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .status-text { font-size: 12px; color: var(--mist); }
+
+  .sidebar-section { position: relative; z-index: 1; }
+
+  .sidebar-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fog);
+    margin-bottom: 12px;
+  }
+
+  .quick-btn {
+    display: block;
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--mist);
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .quick-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: var(--sage);
+    color: var(--white);
+  }
+
+  .quick-btn .q-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .powered-by {
+    font-size: 11px;
+    color: var(--fog);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .powered-by span {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* ── CHAT PANEL ── */
+  .chat-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* topbar */
+  .topbar {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--parchment);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--white);
+  }
+
+  .topbar-title {
+    font-family: var(--font-head);
+    font-size: 19px;
+    color: var(--forest);
+  }
+
+  .topbar-sub {
+    font-size: 12px;
+    color: var(--fog);
+    margin-top: 1px;
+  }
+
+  .groq-badge {
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--cream);
+    color: var(--slate);
+    border: 1px solid var(--parchment);
+    border-radius: 20px;
+    padding: 4px 12px;
+    letter-spacing: 0.03em;
+  }
+
+  /* messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--parchment); border-radius: 2px; }
+
+  .msg-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    animation: msgIn 0.25s ease-out both;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-row.user { flex-direction: row-reverse; }
+
+  .av {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .av-bot {
+    background: var(--mist);
+    color: var(--forest);
+  }
+
+  .av-bot svg { width: 16px; height: 16px; }
+
+  .av-user {
+    background: var(--forest);
+    color: var(--mist);
+  }
+
+  .msg-content { max-width: 68%; }
+
+  .bubble {
+    padding: 13px 17px;
+    font-size: 14px;
+    line-height: 1.65;
+    word-wrap: break-word;
+  }
+
+  .bubble-bot {
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: 18px 18px 18px 4px;
+    color: var(--ink);
+  }
+
+  .bubble-user {
+    background: var(--forest);
+    border-radius: 18px 18px 4px 18px;
+    color: var(--white);
+  }
+
+  .msg-time {
+    font-size: 10px;
+    color: var(--fog);
+    margin-top: 5px;
+    padding: 0 4px;
+  }
+
+  .msg-row.user .msg-time { text-align: right; }
+
+  /* typing */
+  .typing-bubble {
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: 18px 18px 18px 4px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    width: 58px;
+  }
+
+  .tdot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--fog);
+    animation: tdot 1.3s infinite;
+  }
+  .tdot:nth-child(2) { animation-delay: 0.2s; }
+  .tdot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes tdot {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40%            { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* input area */
+  .input-area {
+    padding: 16px 28px 24px;
+    border-top: 1px solid var(--parchment);
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--cream);
+    border: 1.5px solid var(--parchment);
+    border-radius: 20px;
+    padding: 8px 8px 8px 18px;
+    transition: border-color 0.15s;
+  }
+
+  .input-row:focus-within { border-color: var(--sage); }
+
+  #inp {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    resize: none;
+    min-height: 24px;
+    max-height: 96px;
+    line-height: 1.5;
+    padding: 4px 0;
+  }
+
+  #inp::placeholder { color: var(--fog); }
+
+  #send-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--forest);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  #send-btn:hover { background: var(--leaf); }
+  #send-btn:active { transform: scale(0.92); }
+  #send-btn:disabled { background: var(--parchment); cursor: not-allowed; }
+  #send-btn svg { width: 15px; height: 15px; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--fog);
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  /* error */
+  .err-msg {
+    font-size: 13px;
+    color: #b34545;
+    background: #fdf0f0;
+    border: 1px solid #f5c6c6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  /* welcome card */
+  .welcome-card {
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: 18px;
+    padding: 22px 24px;
+    max-width: 360px;
+  }
+
+  .wc-title {
+    font-family: var(--font-head);
+    font-size: 17px;
+    color: var(--forest);
+    margin-bottom: 8px;
+  }
+
+  .wc-body {
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.6;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 720px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .chat-panel { height: 100dvh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">NestIQ</div>
+        <div class="brand-tagline">AI Real Estate Agent</div>
+      </div>
+    </div>
+
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span class="status-text">Agent online</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Quick searches</div>
+
+      <button class="quick-btn" onclick="quickSend('2BHK in Hyderabad under 60 lakhs')">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        2BHK in Hyderabad, 60L
+      </button>
+
+      <button class="quick-btn" onclick="quickSend('3BHK apartment in Bangalore under 1 crore')">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        3BHK in Bangalore, 1Cr
+      </button>
+
+      <button class="quick-btn" onclick="quickSend('Luxury villa in Goa near the beach')">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Luxury villa in Goa
+      </button>
+
+      <button class="quick-btn" onclick="quickSend('How do I apply for a home loan in India?')">
+        <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Home loan guidance
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="powered-by">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aaca5" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        Powered by <span>Groq · LLaMA 3.3</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CHAT PANEL -->
+  <main class="chat-panel">
+
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Property Advisor</div>
+        <div class="topbar-sub">Ask anything about Indian real estate</div>
+      </div>
+      <div class="groq-badge">Live · n8n</div>
+    </div>
+
+    <div class="messages" id="messages">
+      <!-- Welcome message -->
+      <div class="msg-row" style="align-items:flex-start">
+        <div class="av av-bot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0a3d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div>
+          <div class="welcome-card">
+            <div class="wc-title">Hello! I'm your NestIQ advisor.</div>
+            <div class="wc-body">I specialise in Indian residential and commercial property. Share your location, budget, and what you're looking for — and I'll find the perfect match.<br><br>Or try one of the quick searches on the left.</div>
+          </div>
+          <div class="msg-time">just now</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea
+          id="inp"
+          placeholder="Tell me what you're looking for…"
+          rows="1"
+          oninput="autoResize(this)"
+          onkeydown="onKey(event)"
+        ></textarea>
+        <button id="send-btn" onclick="sendMsg()" title="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Press Enter to send · Shift+Enter for new line</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ─── CONFIG ──────────────────────────────────────────────
+  const WEBHOOK = 'https://n8n.levify.com.pk/webhook/chatbot';
+  // ─────────────────────────────────────────────────────────
+
+  const msgList  = document.getElementById('messages');
+  const inp      = document.getElementById('inp');
+  const sendBtn  = document.getElementById('send-btn');
+  let   busy     = false;
+
+  function now() {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 96) + 'px';
+  }
+
+  function scroll() {
+    msgList.scrollTop = msgList.scrollHeight;
+  }
+
+  function stripNote(text) {
+    return (text || '').replace(/---PERSONALIZED NOTE---[\s\S]*?---END NOTE---/g, '').trim();
+  }
+
+  function formatText(raw) {
+    return raw
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n{2,}/g, '</p><p style="margin-top:8px">')
+      .replace(/\n/g, '<br>');
+  }
+
+  function addMessage(text, role) {
+    const row  = document.createElement('div');
+    row.className = 'msg-row' + (role === 'user' ? ' user' : '');
+
+    const av = document.createElement('div');
+    av.className = 'av ' + (role === 'user' ? 'av-user' : 'av-bot');
+    if (role === 'user') {
+      av.textContent = 'U';
+    } else {
+      av.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#0a3d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>`;
+    }
+
+    const content = document.createElement('div');
+    content.className = 'msg-content';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble ' + (role === 'user' ? 'bubble-user' : 'bubble-bot');
+    bubble.innerHTML = '<p>' + formatText(text) + '</p>';
+
+    const time = document.createElement('div');
+    time.className = 'msg-time';
+    time.textContent = now();
+
+    content.appendChild(bubble);
+    content.appendChild(time);
+
+    if (role === 'user') { row.appendChild(content); row.appendChild(av); }
+    else                 { row.appendChild(av);      row.appendChild(content); }
+
+    msgList.appendChild(row);
+    scroll();
+  }
+
+  function showTyping() {
+    const row = document.createElement('div');
+    row.className = 'msg-row'; row.id = 'typing-row';
+    const av = document.createElement('div');
+    av.className = 'av av-bot';
+    av.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#0a3d2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>`;
+    const bub = document.createElement('div');
+    bub.className = 'typing-bubble';
+    bub.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+    row.appendChild(av); row.appendChild(bub);
+    msgList.appendChild(row);
+    scroll();
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-row');
+    if (t) t.remove();
+  }
+
+  function showError(msg) {
+    const d = document.createElement('div');
+    d.className = 'err-msg';
+    d.textContent = msg;
+    msgList.appendChild(d);
+    scroll();
+  }
+
+  async function sendMsg() {
+    if (busy) return;
+    const text = inp.value.trim();
+    if (!text) return;
+
+    inp.value = ''; inp.style.height = 'auto';
+    busy = true; sendBtn.disabled = true;
+
+    addMessage(text, 'user');
+    showTyping();
+
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user:    'web_' + Math.floor(Date.now() / 1000),
+          message: text,
+          channel: 'web'
+        })
+      });
+
+      removeTyping();
+
+      if (!res.ok) throw new Error('Server returned ' + res.status);
+
+      let reply = '';
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) {
+        const d = await res.json();
+        reply = d.output || d.message || d.reply || d.text
+              || (d.data && (d.data.output || d.data.message))
+              || (typeof d === 'string' ? d : JSON.stringify(d));
+      } else {
+        reply = await res.text();
+      }
+
+      const clean = stripNote(reply);
+      addMessage(clean || 'Message received. Please make sure the workflow is active in n8n.', 'bot');
+
+    } catch (e) {
+      removeTyping();
+      showError('Could not reach the agent. Please check that the n8n workflow is active and your Airtable credential is saved.');
+    } finally {
+      busy = false; sendBtn.disabled = false;
+      inp.focus();
+    }
+  }
+
+  function quickSend(text) {
+    inp.value = text;
+    sendMsg();
+  }
+
+  function onKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  }
+
+  inp.focus();
+</script>
+
+</body>
+</html>
