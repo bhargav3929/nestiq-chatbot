@@ -457,6 +457,170 @@
     line-height: 1.6;
   }
 
+  /* ── VOICE FEATURES ── */
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .voice-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--fog);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 16px;
+    border: 1px solid var(--parchment);
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .voice-toggle:hover {
+    border-color: var(--sage);
+    color: var(--slate);
+  }
+
+  .voice-toggle.active {
+    background: var(--mist);
+    border-color: var(--sage);
+    color: var(--forest);
+  }
+
+  .voice-toggle svg { width: 13px; height: 13px; }
+
+  .input-row { position: relative; }
+
+  #mic-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1.5px solid var(--parchment);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  #mic-btn:hover {
+    border-color: var(--sage);
+    background: rgba(61, 184, 122, 0.06);
+  }
+
+  #mic-btn svg { width: 16px; height: 16px; transition: all 0.2s; }
+
+  #mic-btn.recording {
+    border-color: #d94444;
+    background: rgba(217, 68, 68, 0.08);
+    animation: mic-pulse 1.5s ease-in-out infinite;
+  }
+
+  #mic-btn.recording svg { stroke: #d94444; }
+
+  @keyframes mic-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(217, 68, 68, 0.25); }
+    50% { box-shadow: 0 0 0 10px rgba(217, 68, 68, 0); }
+  }
+
+  .rec-badge {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d94444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 12px;
+    border-radius: 12px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .rec-badge.visible { opacity: 1; }
+
+  .rec-dot-live {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 1s infinite;
+  }
+
+  .speak-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 0;
+    margin-left: 6px;
+    vertical-align: middle;
+    opacity: 0.35;
+    transition: opacity 0.15s, background 0.15s;
+  }
+
+  .speak-btn:hover { opacity: 1; background: var(--mist); }
+  .speak-btn.speaking { opacity: 1; }
+  .speak-btn.speaking svg { stroke: var(--sage); }
+  .speak-btn svg { width: 12px; height: 12px; }
+
+  .voice-msg-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--fog);
+    margin-bottom: 4px;
+  }
+
+  .voice-msg-label svg { width: 10px; height: 10px; opacity: 0.6; }
+
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--parchment);
+    border-radius: 14px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .lang-opt {
+    font-size: 11px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    color: var(--fog);
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+
+  .lang-opt.active {
+    background: var(--forest);
+    color: var(--white);
+  }
+
+  .lang-opt:not(.active):hover {
+    background: rgba(10, 61, 46, 0.06);
+    color: var(--slate);
+  }
+
   /* ── MOBILE ── */
   @media (max-width: 720px) {
     .shell { grid-template-columns: 1fr; }
@@ -541,7 +705,17 @@
         <div class="topbar-title">Property Advisor</div>
         <div class="topbar-sub">Ask anything about Indian real estate</div>
       </div>
-      <div class="groq-badge">Live · n8n</div>
+      <div class="topbar-right">
+        <div class="voice-toggle active" id="voice-toggle" onclick="toggleVoiceOutput()" title="Auto-speak responses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+          <span>Voice</span>
+        </div>
+        <div class="groq-badge">Live · n8n</div>
+      </div>
     </div>
 
     <div class="messages" id="messages">
@@ -572,14 +746,31 @@
           oninput="autoResize(this)"
           onkeydown="onKey(event)"
         ></textarea>
+        <div class="lang-toggle" id="lang-toggle" title="Voice language">
+          <button class="lang-opt" data-lang="en-US" onclick="setVoiceLang('en-US')">EN</button>
+          <button class="lang-opt active" data-lang="ur-PK" onclick="setVoiceLang('ur-PK')">اردو</button>
+          <button class="lang-opt" data-lang="auto" onclick="setVoiceLang('auto')">Auto</button>
+        </div>
+        <button id="mic-btn" onclick="toggleRecording()" title="Voice input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
         <button id="send-btn" onclick="sendMsg()" title="Send message">
           <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"/>
             <polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>
         </button>
+        <div class="rec-badge" id="rec-badge">
+          <div class="rec-dot-live"></div>
+          <span id="rec-timer">0:00</span>
+        </div>
       </div>
-      <div class="input-hint">Press Enter to send · Shift+Enter for new line</div>
+      <div class="input-hint">Enter to send · Shift+Enter new line · Tap mic for voice</div>
     </div>
 
   </main>
@@ -648,6 +839,15 @@
 
     content.appendChild(bubble);
     content.appendChild(time);
+
+    if (role !== 'user') {
+      const speakBtn = document.createElement('button');
+      speakBtn.className = 'speak-btn';
+      speakBtn.title = 'Listen';
+      speakBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+      speakBtn.onclick = function() { speakMessage(text, speakBtn); };
+      time.appendChild(speakBtn);
+    }
 
     if (role === 'user') { row.appendChild(content); row.appendChild(av); }
     else                 { row.appendChild(av);      row.appendChild(content); }
@@ -726,6 +926,8 @@
       const clean = stripNote(reply);
       addMessage(clean || 'Message received. Please make sure the workflow is active in n8n.', 'bot');
 
+      if (voiceEnabled && clean) speakText(clean);
+
     } catch (e) {
       removeTyping();
       showError('Could not reach the agent. Please check that the n8n workflow is active and your Airtable credential is saved.');
@@ -743,6 +945,290 @@
   function onKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
   }
+
+  // ─── VOICE ──────────────────────────────────────────────
+  const VOICE_WEBHOOK = 'https://n8n.levify.com.pk/webhook/voice-chatbot';
+
+  let voiceEnabled    = true;
+  let isRecording     = false;
+  let mediaRec        = null;
+  let audioChunks     = [];
+  let recTimer        = null;
+  let recSeconds      = 0;
+  let recognition     = null;
+  let currentUtterance = null;
+  let voiceLang       = 'ur-PK';
+
+  const micBtn   = document.getElementById('mic-btn');
+  const recBadge = document.getElementById('rec-badge');
+  const recTimerEl = document.getElementById('rec-timer');
+
+  // Speech Recognition (browser-based STT)
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRec) {
+    recognition = new SpeechRec();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = voiceLang === 'auto' ? 'ur-PK' : voiceLang;
+
+    recognition.onresult = function(e) {
+      let transcript = '';
+      for (let i = 0; i < e.results.length; i++) {
+        transcript += e.results[i][0].transcript;
+      }
+      inp.value = transcript;
+      autoResize(inp);
+    };
+
+    recognition.onerror = function(e) {
+      if (e.error !== 'aborted' && e.error !== 'no-speech') {
+        console.warn('Speech recognition:', e.error);
+      }
+    };
+
+    recognition.onend = function() {
+      if (isRecording) {
+        try { recognition.start(); } catch(err) {}
+      }
+    };
+  }
+
+  async function toggleRecording() {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      await startRecording();
+    }
+  }
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      isRecording = true;
+      recSeconds = 0;
+      inp.value = '';
+      updateRecUI(true);
+
+      // Start browser speech recognition for live transcript
+      if (recognition) {
+        recognition.lang = voiceLang === 'auto' ? 'ur-PK' : voiceLang;
+        try { recognition.start(); } catch(err) {}
+      }
+
+      // Start MediaRecorder as fallback
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : 'audio/webm';
+      mediaRec = new MediaRecorder(stream, { mimeType: mimeType });
+      audioChunks = [];
+
+      mediaRec.ondataavailable = function(e) {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRec.start(500);
+
+      recTimer = setInterval(function() {
+        recSeconds++;
+        var m = Math.floor(recSeconds / 60);
+        var s = recSeconds % 60;
+        recTimerEl.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }, 1000);
+
+    } catch (err) {
+      isRecording = false;
+      updateRecUI(false);
+      showError('Microphone access denied. Please allow microphone to use voice.');
+    }
+  }
+
+  function stopRecording() {
+    isRecording = false;
+    updateRecUI(false);
+
+    if (recTimer) { clearInterval(recTimer); recTimer = null; }
+    if (recognition) { try { recognition.stop(); } catch(err) {} }
+
+    if (mediaRec && mediaRec.state !== 'inactive') {
+      mediaRec.onstop = function() {
+        mediaRec.stream.getTracks().forEach(function(t) { t.stop(); });
+
+        // If browser STT produced a transcript, send it as text
+        if (inp.value.trim()) {
+          sendMsg();
+          return;
+        }
+
+        // Otherwise, send audio to n8n for server-side Whisper transcription
+        if (audioChunks.length > 0) {
+          var blob = new Blob(audioChunks, { type: 'audio/webm' });
+          sendVoiceToN8n(blob);
+        }
+      };
+      mediaRec.stop();
+    } else {
+      // No media recorder, just send text if available
+      if (inp.value.trim()) sendMsg();
+    }
+  }
+
+  async function sendVoiceToN8n(blob) {
+    if (busy) return;
+    busy = true;
+    sendBtn.disabled = true;
+    showTyping();
+
+    try {
+      var reader = new FileReader();
+      var base64 = await new Promise(function(resolve) {
+        reader.onload = function() { resolve(reader.result.split(',')[1]); };
+        reader.readAsDataURL(blob);
+      });
+
+      var res = await fetch(VOICE_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audio: base64,
+          format: 'webm',
+          user: 'web_' + Math.floor(Date.now() / 1000),
+          channel: 'voice_web'
+        })
+      });
+
+      removeTyping();
+      if (!res.ok) throw new Error('Server returned ' + res.status);
+
+      var d = await res.json();
+      var transcript = d.transcript || 'Voice message';
+      var reply = d.output || d.message || '';
+
+      addMessage(transcript, 'user', true);
+
+      var clean = stripNote(reply);
+      addMessage(clean || 'Message received.', 'bot');
+
+      if (voiceEnabled && clean) speakText(clean);
+
+    } catch (e) {
+      removeTyping();
+      showError('Voice processing failed. Please try typing your message instead.');
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      inp.focus();
+    }
+  }
+
+  function updateRecUI(recording) {
+    if (recording) {
+      micBtn.classList.add('recording');
+      recBadge.classList.add('visible');
+      recTimerEl.textContent = '0:00';
+      inp.placeholder = 'Listening\u2026 tap mic to stop';
+    } else {
+      micBtn.classList.remove('recording');
+      recBadge.classList.remove('visible');
+      inp.placeholder = "Tell me what you're looking for\u2026";
+    }
+  }
+
+  // ─── TEXT-TO-SPEECH ─────────────────────────────────────
+  function detectLang(text) {
+    // Detect Urdu/Arabic script (Unicode range 0600-06FF, 0750-077F, FB50-FDFF, FE70-FEFF)
+    var urduChars = (text.match(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/g) || []).length;
+    return urduChars > text.length * 0.15 ? 'ur-PK' : 'en-US';
+  }
+
+  function cleanForSpeech(text) {
+    return text
+      .replace(/<[^>]*>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/\*\*(.*?)\*\*/g, '$1');
+  }
+
+  function speakText(text) {
+    if (!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+
+    var cleanText = cleanForSpeech(text);
+    if (!cleanText.trim()) return;
+
+    var lang = detectLang(cleanText);
+    var utt = new SpeechSynthesisUtterance(cleanText);
+    utt.lang = lang;
+    utt.rate = lang === 'ur-PK' ? 0.9 : 0.95;
+    utt.pitch = 1.0;
+    currentUtterance = utt;
+
+    speechSynthesis.speak(utt);
+  }
+
+  function speakMessage(text, btn) {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      document.querySelectorAll('.speak-btn.speaking').forEach(function(b) {
+        b.classList.remove('speaking');
+      });
+      return;
+    }
+
+    btn.classList.add('speaking');
+
+    var cleanText = cleanForSpeech(text);
+    var lang = detectLang(cleanText);
+    var utt = new SpeechSynthesisUtterance(cleanText);
+    utt.lang = lang;
+    utt.rate = lang === 'ur-PK' ? 0.9 : 0.95;
+    utt.onend = function() { btn.classList.remove('speaking'); };
+    utt.onerror = function() { btn.classList.remove('speaking'); };
+
+    speechSynthesis.speak(utt);
+  }
+
+  function toggleVoiceOutput() {
+    voiceEnabled = !voiceEnabled;
+    var toggle = document.getElementById('voice-toggle');
+    toggle.classList.toggle('active', voiceEnabled);
+    if (!voiceEnabled && speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+  }
+
+  function setVoiceLang(lang) {
+    voiceLang = lang;
+    document.querySelectorAll('.lang-opt').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    // If currently recording with browser STT, restart with new lang
+    if (isRecording && recognition) {
+      try { recognition.stop(); } catch(err) {}
+      recognition.lang = lang === 'auto' ? 'ur-PK' : lang;
+      try { recognition.start(); } catch(err) {}
+    }
+  }
+
+  // Extend addMessage to support voice label
+  var _origAddMessage = addMessage;
+  addMessage = function(text, role, isVoice) {
+    _origAddMessage(text, role);
+    if (isVoice && role === 'user') {
+      var rows = msgList.querySelectorAll('.msg-row.user');
+      var lastRow = rows[rows.length - 1];
+      if (lastRow) {
+        var content = lastRow.querySelector('.msg-content');
+        if (content) {
+          var label = document.createElement('div');
+          label.className = 'voice-msg-label';
+          label.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg> Voice message';
+          content.insertBefore(label, content.firstChild);
+        }
+      }
+    }
+  };
 
   inp.focus();
 </script>
