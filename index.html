@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NestIQ — AI Real Estate Agent</title>
+<title>Gandhara Properties — DHA Lake District AI Advisor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
@@ -588,6 +588,30 @@
 
   .voice-msg-label svg { width: 10px; height: 10px; opacity: 0.6; }
 
+  .voice-select {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--forest);
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: 14px;
+    padding: 4px 8px 4px 10px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a5550' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 22px;
+  }
+
+  .voice-select:hover, .voice-select:focus {
+    border-color: var(--sage);
+  }
+
   .lang-toggle {
     display: flex;
     align-items: center;
@@ -643,8 +667,8 @@
         </svg>
       </div>
       <div>
-        <div class="brand-name">NestIQ</div>
-        <div class="brand-tagline">AI Real Estate Agent</div>
+        <div class="brand-name">Gandhara</div>
+        <div class="brand-tagline">DHA Lake District · AI Advisor</div>
       </div>
     </div>
 
@@ -656,34 +680,34 @@
     <div class="sidebar-section">
       <div class="sidebar-label">Quick searches</div>
 
-      <button class="quick-btn" onclick="quickSend('2BHK in Hyderabad under 60 lakhs')">
+      <button class="quick-btn" onclick="quickSend('What is the current price of a DHA Gandhara file?')">
         <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        2BHK in Hyderabad, 60L
+        File price & ROI
       </button>
 
-      <button class="quick-btn" onclick="quickSend('3BHK apartment in Bangalore under 1 crore')">
+      <button class="quick-btn" onclick="quickSend('Tell me about DHA Gandhara Lake District amenities')">
         <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        3BHK in Bangalore, 1Cr
+        Amenities & lifestyle
       </button>
 
-      <button class="quick-btn" onclick="quickSend('Luxury villa in Goa near the beach')">
+      <button class="quick-btn" onclick="quickSend('How do I book a plot in DHA Gandhara?')">
         <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        Luxury villa in Goa
+        Booking procedure
       </button>
 
-      <button class="quick-btn" onclick="quickSend('How do I apply for a home loan in India?')">
+      <button class="quick-btn" onclick="quickSend('Where is DHA Gandhara located and how to reach?')">
         <svg class="q-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <circle cx="12" cy="12" r="10"/>
           <line x1="12" y1="8" x2="12" y2="12"/>
           <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
-        Home loan guidance
+        Location & access
       </button>
     </div>
 
@@ -702,10 +726,18 @@
 
     <div class="topbar">
       <div>
-        <div class="topbar-title">Property Advisor</div>
-        <div class="topbar-sub">Ask anything about Indian real estate</div>
+        <div class="topbar-title">Gandhara Property Advisor</div>
+        <div class="topbar-sub">DHA Gandhara Lake District · Islamabad</div>
       </div>
       <div class="topbar-right">
+        <select id="voice-select" class="voice-select" title="AI Voice">
+          <option value="nova" selected>Nova</option>
+          <option value="shimmer">Shimmer</option>
+          <option value="echo">Echo</option>
+          <option value="onyx">Onyx</option>
+          <option value="fable">Fable</option>
+          <option value="alloy">Alloy</option>
+        </select>
         <div class="voice-toggle active" id="voice-toggle" onclick="toggleVoiceOutput()" title="Auto-speak responses">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
@@ -729,8 +761,8 @@
         </div>
         <div>
           <div class="welcome-card">
-            <div class="wc-title">Hello! I'm your NestIQ advisor.</div>
-            <div class="wc-body">I specialise in Indian residential and commercial property. Share your location, budget, and what you're looking for — and I'll find the perfect match.<br><br>Or try one of the quick searches on the left.</div>
+            <div class="wc-title">Assalam-o-Alaikum! I'm your Gandhara advisor.</div>
+            <div class="wc-body">I specialise in DHA Gandhara Lake District — Islamabad's most prestigious new development. Ask me about plot prices, ROI projections, amenities, booking procedures, or anything about the project.<br><br>Try a quick search on the left, or just ask me anything.</div>
           </div>
           <div class="msg-time">just now</div>
         </div>
@@ -778,7 +810,7 @@
 
 <script>
   // ─── CONFIG ──────────────────────────────────────────────
-  const WEBHOOK = 'https://n8n.levify.com.pk/webhook/chatbot';
+  const WEBHOOK = 'https://n8n.levify.com.pk/webhook/chatbot-rag';
   // ─────────────────────────────────────────────────────────
 
   const msgList  = document.getElementById('messages');
@@ -1134,12 +1166,10 @@
     }
   }
 
-  // ─── TEXT-TO-SPEECH ─────────────────────────────────────
-  function detectLang(text) {
-    // Detect Urdu/Arabic script (Unicode range 0600-06FF, 0750-077F, FB50-FDFF, FE70-FEFF)
-    var urduChars = (text.match(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/g) || []).length;
-    return urduChars > text.length * 0.15 ? 'ur-PK' : 'en-US';
-  }
+  // ─── TEXT-TO-SPEECH (OpenAI TTS) ─────────────────────────
+  const TTS_WEBHOOK = 'https://n8n.levify.com.pk/webhook/tts';
+  let currentAudio = null;
+  let audioCache = new Map();
 
   function cleanForSpeech(text) {
     return text
@@ -1150,26 +1180,62 @@
       .replace(/\*\*(.*?)\*\*/g, '$1');
   }
 
-  function speakText(text) {
-    if (!window.speechSynthesis) return;
-    speechSynthesis.cancel();
+  function getSelectedVoice() {
+    var sel = document.getElementById('voice-select');
+    return sel ? sel.value : 'nova';
+  }
 
+  async function getTTSAudio(text) {
+    var cacheKey = text.substring(0, 100) + '|' + getSelectedVoice();
+    if (audioCache.has(cacheKey)) {
+      return new Audio(audioCache.get(cacheKey));
+    }
+
+    var res = await fetch(TTS_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text, voice: getSelectedVoice() })
+    });
+
+    if (!res.ok) throw new Error('TTS returned ' + res.status);
+    var d = await res.json();
+    if (!d.audio) throw new Error('No audio in response');
+    var dataUrl = 'data:audio/mp3;base64,' + d.audio;
+    audioCache.set(cacheKey, dataUrl);
+    return new Audio(dataUrl);
+  }
+
+  async function speakText(text) {
     var cleanText = cleanForSpeech(text);
     if (!cleanText.trim()) return;
 
-    var lang = detectLang(cleanText);
-    var utt = new SpeechSynthesisUtterance(cleanText);
-    utt.lang = lang;
-    utt.rate = lang === 'ur-PK' ? 0.9 : 0.95;
-    utt.pitch = 1.0;
-    currentUtterance = utt;
+    // Stop any current playback
+    if (currentAudio && !currentAudio.paused) {
+      currentAudio.pause();
+      currentAudio = null;
+    }
 
-    speechSynthesis.speak(utt);
+    try {
+      var audio = await getTTSAudio(cleanText);
+      currentAudio = audio;
+      audio.play();
+    } catch(e) {
+      // Fallback to browser TTS
+      if (window.speechSynthesis) {
+        var utt = new SpeechSynthesisUtterance(cleanText);
+        utt.lang = 'en-US';
+        utt.rate = 0.95;
+        speechSynthesis.speak(utt);
+      }
+    }
   }
 
-  function speakMessage(text, btn) {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
+  async function speakMessage(text, btn) {
+    // Toggle off if already playing
+    if (currentAudio && !currentAudio.paused) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
       document.querySelectorAll('.speak-btn.speaking').forEach(function(b) {
         b.classList.remove('speaking');
       });
@@ -1177,24 +1243,39 @@
     }
 
     btn.classList.add('speaking');
-
     var cleanText = cleanForSpeech(text);
-    var lang = detectLang(cleanText);
-    var utt = new SpeechSynthesisUtterance(cleanText);
-    utt.lang = lang;
-    utt.rate = lang === 'ur-PK' ? 0.9 : 0.95;
-    utt.onend = function() { btn.classList.remove('speaking'); };
-    utt.onerror = function() { btn.classList.remove('speaking'); };
 
-    speechSynthesis.speak(utt);
+    try {
+      var audio = await getTTSAudio(cleanText);
+      currentAudio = audio;
+      audio.onended = function() { btn.classList.remove('speaking'); currentAudio = null; };
+      audio.onerror = function() { btn.classList.remove('speaking'); currentAudio = null; };
+      audio.play();
+    } catch(e) {
+      btn.classList.remove('speaking');
+      // Fallback to browser TTS
+      if (window.speechSynthesis) {
+        var utt = new SpeechSynthesisUtterance(cleanText);
+        utt.lang = 'en-US';
+        utt.rate = 0.95;
+        utt.onend = function() { btn.classList.remove('speaking'); };
+        speechSynthesis.speak(utt);
+      }
+    }
   }
 
   function toggleVoiceOutput() {
     voiceEnabled = !voiceEnabled;
     var toggle = document.getElementById('voice-toggle');
     toggle.classList.toggle('active', voiceEnabled);
-    if (!voiceEnabled && speechSynthesis.speaking) {
-      speechSynthesis.cancel();
+    if (!voiceEnabled) {
+      if (currentAudio && !currentAudio.paused) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      if (window.speechSynthesis && speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
     }
   }
 
