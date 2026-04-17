@@ -319,6 +319,132 @@
     color: var(--ink);
   }
 
+  /* ── MARKDOWN CONTENT INSIDE BOT BUBBLE ── */
+  .bubble-bot p { margin: 0 0 8px; }
+  .bubble-bot p:last-child { margin-bottom: 0; }
+
+  .bubble-bot .md-h2 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--forest);
+    margin: 10px 0 6px;
+    line-height: 1.3;
+  }
+  .bubble-bot .md-h2:first-child { margin-top: 0; }
+
+  .bubble-bot .md-h3 {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--forest);
+    margin: 8px 0 4px;
+    letter-spacing: 0.01em;
+  }
+  .bubble-bot .md-h3:first-child { margin-top: 0; }
+
+  .bubble-bot .md-ul,
+  .bubble-bot .md-ol {
+    margin: 4px 0 10px;
+    padding-left: 6px;
+    list-style: none;
+  }
+
+  .bubble-bot .md-ul li,
+  .bubble-bot .md-ol li {
+    position: relative;
+    padding-left: 18px;
+    margin: 5px 0;
+    line-height: 1.55;
+  }
+
+  .bubble-bot .md-ul li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 9px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--sage);
+  }
+
+  .bubble-bot .md-ol { counter-reset: li; }
+  .bubble-bot .md-ol li { counter-increment: li; }
+  .bubble-bot .md-ol li::before {
+    content: counter(li) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 600;
+    color: var(--forest);
+    font-size: 12.5px;
+    min-width: 16px;
+  }
+
+  .bubble-bot .md-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 12.5px;
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .bubble-bot .md-table th {
+    background: var(--forest);
+    color: var(--mist);
+    text-align: left;
+    padding: 9px 12px;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .bubble-bot .md-table td {
+    padding: 9px 12px;
+    border-top: 1px solid var(--parchment);
+    vertical-align: top;
+  }
+
+  .bubble-bot .md-table tr:nth-child(even) td { background: var(--cream); }
+
+  .bubble-bot .md-code {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    background: var(--parchment);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--forest);
+  }
+
+  .bubble-bot .md-pre {
+    background: var(--ink);
+    color: var(--mist);
+    padding: 10px 14px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    margin: 8px 0;
+    line-height: 1.5;
+  }
+
+  .bubble-bot hr {
+    border: none;
+    border-top: 1px solid var(--parchment);
+    margin: 12px 0;
+  }
+
+  .bubble-bot strong { color: var(--forest); font-weight: 600; }
+
+  /* max-width for bot bubbles slightly wider when tables present */
+  .msg-row:not(.user) .msg-content { max-width: 78%; }
+  .msg-row.user .msg-content { max-width: 68%; }
+
   .bubble-user {
     background: var(--forest);
     border-radius: 18px 18px 4px 18px;
@@ -835,12 +961,134 @@
     return (text || '').replace(/---PERSONALIZED NOTE---[\s\S]*?---END NOTE---/g, '').trim();
   }
 
-  function formatText(raw) {
-    return raw
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n{2,}/g, '</p><p style="margin-top:8px">')
-      .replace(/\n/g, '<br>');
+  function escapeHtml(s) {
+    return (s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function formatUserText(raw) {
+    return '<p>' + escapeHtml(raw).replace(/\n/g, '<br>') + '</p>';
+  }
+
+  // Lightweight Markdown → HTML for bot messages.
+  // Supports: headings (##, ###), unordered lists (-, *, •),
+  // ordered lists (1.), pipe tables, **bold**, `inline code`,
+  // ```fenced code```, --- horizontal rules, paragraphs.
+  function formatBotMarkdown(raw) {
+    if (!raw) return '';
+
+    let text = escapeHtml(raw.trim());
+
+    // Fenced code blocks — protect before line-by-line parsing
+    const codeBlocks = [];
+    text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+      codeBlocks.push('<pre class="md-pre">' + code.replace(/\n+$/, '') + '</pre>');
+      return '\u0000CB' + (codeBlocks.length - 1) + '\u0000';
+    });
+
+    // Horizontal rule
+    text = text.replace(/^[\-_*]{3,}$/gm, '\u0000HR\u0000');
+
+    // Pipe tables
+    text = text.replace(
+      /(^\|.*\|[ \t]*\n\|[\s\-:|]+\|[ \t]*\n(?:\|.*\|[ \t]*\n?)+)/gm,
+      (block) => {
+        const rows = block.trim().split('\n').filter(r => r.trim().startsWith('|'));
+        if (rows.length < 2) return block;
+        const splitRow = r => r.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+        const header = splitRow(rows[0]);
+        const body = rows.slice(2).map(splitRow);
+        let html = '<table class="md-table"><thead><tr>';
+        header.forEach(c => html += '<th>' + c + '</th>');
+        html += '</tr></thead><tbody>';
+        body.forEach(row => {
+          html += '<tr>';
+          header.forEach((_, i) => html += '<td>' + (row[i] || '') + '</td>');
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+        return '\u0000TBL' + html + '\u0000TBL\u0000';
+      }
+    );
+
+    // Block parsing
+    const lines = text.split('\n');
+    const out = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      // Passthrough placeholders
+      if (/^\u0000(HR|TBL|CB\d+)\u0000/.test(line.trim())) {
+        if (line.includes('\u0000HR\u0000')) out.push('<hr>');
+        else if (line.includes('\u0000TBL')) {
+          out.push(line.replace(/\u0000TBL/g, '').replace(/\u0000$/, ''));
+        } else {
+          out.push(line);
+        }
+        i++;
+        continue;
+      }
+
+      // Headings
+      const h3 = line.match(/^###\s+(.+)$/);
+      if (h3) { out.push('<h3 class="md-h3">' + h3[1] + '</h3>'); i++; continue; }
+
+      const h2 = line.match(/^##\s+(.+)$/);
+      if (h2) { out.push('<h2 class="md-h2">' + h2[1] + '</h2>'); i++; continue; }
+
+      // Unordered list
+      if (/^\s*[-*•]\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*[-*•]\s+/.test(lines[i])) {
+          items.push('<li>' + lines[i].replace(/^\s*[-*•]\s+/, '') + '</li>');
+          i++;
+        }
+        out.push('<ul class="md-ul">' + items.join('') + '</ul>');
+        continue;
+      }
+
+      // Ordered list
+      if (/^\s*\d+\.\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+          items.push('<li>' + lines[i].replace(/^\s*\d+\.\s+/, '') + '</li>');
+          i++;
+        }
+        out.push('<ol class="md-ol">' + items.join('') + '</ol>');
+        continue;
+      }
+
+      // Blank line
+      if (!line.trim()) { i++; continue; }
+
+      // Paragraph (until blank / block element)
+      const para = [];
+      while (
+        i < lines.length &&
+        lines[i].trim() &&
+        !/^(###\s|##\s|\s*[-*•]\s|\s*\d+\.\s|\u0000)/.test(lines[i])
+      ) {
+        para.push(lines[i]);
+        i++;
+      }
+      if (para.length) out.push('<p>' + para.join('<br>') + '</p>');
+    }
+
+    let html = out.join('');
+
+    // Inline: bold, inline code. (Skip italic to avoid clashing with *bullets*.)
+    html = html
+      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`\n]+)`/g, '<code class="md-code">$1</code>');
+
+    // Restore fenced code blocks
+    html = html.replace(/\u0000CB(\d+)\u0000/g, (_, idx) => codeBlocks[+idx] || '');
+
+    return html;
   }
 
   function addMessage(text, role) {
@@ -863,7 +1111,7 @@
 
     const bubble = document.createElement('div');
     bubble.className = 'bubble ' + (role === 'user' ? 'bubble-user' : 'bubble-bot');
-    bubble.innerHTML = '<p>' + formatText(text) + '</p>';
+    bubble.innerHTML = role === 'user' ? formatUserText(text) : formatBotMarkdown(text);
 
     const time = document.createElement('div');
     time.className = 'msg-time';
@@ -1172,12 +1420,19 @@
   let audioCache = new Map();
 
   function cleanForSpeech(text) {
-    return text
-      .replace(/<[^>]*>/g, '')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/\*\*(.*?)\*\*/g, '$1');
+    return (text || '')
+      .replace(/```[\s\S]*?```/g, ' ')              // drop fenced code
+      .replace(/^\s*\|.*\|\s*$/gm, ' ')             // drop table rows
+      .replace(/^#{1,6}\s+/gm, '')                  // heading markers
+      .replace(/^\s*[-*•]\s+/gm, '')                // bullet markers
+      .replace(/^\s*\d+\.\s+/gm, '')                // ordered list markers
+      .replace(/\*\*(.*?)\*\*/g, '$1')              // bold
+      .replace(/`([^`]+)`/g, '$1')                  // inline code
+      .replace(/<[^>]*>/g, '')                      // any HTML
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/\n{2,}/g, '. ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   function getSelectedVoice() {
