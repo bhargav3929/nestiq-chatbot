@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gandhara Properties — DHA Lake District AI Advisor</title>
+<title>Gandhara Properties — DHA Gandhara Lake District</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
@@ -794,13 +794,13 @@
       </div>
       <div>
         <div class="brand-name">Gandhara</div>
-        <div class="brand-tagline">DHA Lake District · AI Advisor</div>
+        <div class="brand-tagline">DHA Gandhara · Sales Desk</div>
       </div>
     </div>
 
     <div class="status-pill">
       <div class="status-dot"></div>
-      <span class="status-text">Agent online</span>
+      <span class="status-text">Hassan · online</span>
     </div>
 
     <div class="sidebar-section">
@@ -840,9 +840,10 @@
     <div class="sidebar-footer">
       <div class="powered-by">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aaca5" stroke-width="2">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          <path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2z"/>
+          <path d="M8 12l3 3 5-6"/>
         </svg>
-        Powered by <span>Groq · LLaMA 3.3</span>
+        Gandhara Properties · <span>Islamabad</span>
       </div>
     </div>
   </aside>
@@ -852,11 +853,11 @@
 
     <div class="topbar">
       <div>
-        <div class="topbar-title">Gandhara Property Advisor</div>
-        <div class="topbar-sub">DHA Gandhara Lake District · Islamabad</div>
+        <div class="topbar-title">Hassan</div>
+        <div class="topbar-sub">Gandhara Properties · Sales Desk</div>
       </div>
       <div class="topbar-right">
-        <select id="voice-select" class="voice-select" title="AI Voice">
+        <select id="voice-select" class="voice-select" title="Voice">
           <option value="nova" selected>Nova</option>
           <option value="shimmer">Shimmer</option>
           <option value="echo">Echo</option>
@@ -872,7 +873,7 @@
           </svg>
           <span>Voice</span>
         </div>
-        <div class="groq-badge">Live · n8n</div>
+        <div class="groq-badge">Online</div>
       </div>
     </div>
 
@@ -887,8 +888,8 @@
         </div>
         <div>
           <div class="welcome-card">
-            <div class="wc-title">Assalam-o-Alaikum! I'm your Gandhara advisor.</div>
-            <div class="wc-body">I specialise in DHA Gandhara Lake District — Islamabad's most prestigious new development. Ask me about plot prices, ROI projections, amenities, booking procedures, or anything about the project.<br><br>Try a quick search on the left, or just ask me anything.</div>
+            <div class="wc-title">Assalam-o-Alaikum — Hassan here from Gandhara Properties.</div>
+            <div class="wc-body">I handle DHA Gandhara Lake District inquiries out of our Islamabad office. Ask me about plot prices, ROI, amenities, or booking — whatever you need.<br><br>What can I help you with today?</div>
           </div>
           <div class="msg-time">just now</div>
         </div>
@@ -1204,13 +1205,13 @@
       }
 
       const clean = stripNote(reply);
-      addMessage(clean || 'Message received. Please make sure the workflow is active in n8n.', 'bot');
+      addMessage(clean || 'Got it — one second while I pull that up for you.', 'bot');
 
       if (voiceEnabled && clean) speakText(clean);
 
     } catch (e) {
       removeTyping();
-      showError('Could not reach the agent. Please check that the n8n workflow is active and your Airtable credential is saved.');
+      showError('Sorry, I couldn\u2019t get through just now. Please try again in a moment, or call us at +92 330-7770000.');
     } finally {
       busy = false; sendBtn.disabled = false;
       inp.focus();
