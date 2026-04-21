@@ -938,6 +938,20 @@
 <script>
   // ─── CONFIG ──────────────────────────────────────────────
   const WEBHOOK = 'https://n8n.levify.com.pk/webhook/chatbot-rag';
+
+  const SESSION_ID = (() => {
+    try {
+      const k = 'gandhara_session_id';
+      let id = sessionStorage.getItem(k);
+      if (!id) {
+        id = 'web_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+        sessionStorage.setItem(k, id);
+      }
+      return id;
+    } catch (_) {
+      return 'web_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    }
+  })();
   // ─────────────────────────────────────────────────────────
 
   const msgList  = document.getElementById('messages');
@@ -1183,7 +1197,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user:    'web_' + Math.floor(Date.now() / 1000),
+          user:    SESSION_ID,
           message: text,
           channel: 'web'
         })
@@ -1373,7 +1387,7 @@
         body: JSON.stringify({
           audio: base64,
           format: 'webm',
-          user: 'web_' + Math.floor(Date.now() / 1000),
+          user: SESSION_ID,
           channel: 'voice_web'
         })
       });
