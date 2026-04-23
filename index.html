@@ -1022,6 +1022,9 @@
   let   leadName  = 'Unknown';
   let   leadPhone = 'Not provided';
   let   leadEmail = 'Not provided';
+  let   inactivityTimer = null;
+  let   autoScored      = false;
+  const INACTIVITY_MS   = 60000; // 1 minute
 
   function now() {
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1288,6 +1291,7 @@
 
     addMessage(text, 'user');
     conversationHistory.push({ role: 'user', content: text });
+    resetInactivityTimer();
 
     // Simple extraction for name/phone from user messages
     const phoneMatch = text.match(/(\+92|0)(3\d{2}[-\s]?\d{7}|\d{10,11})/);
@@ -1326,6 +1330,7 @@
       const clean = stripNote(reply);
       addMessage(clean || 'Got it — one second while I pull that up for you.', 'bot');
       conversationHistory.push({ role: 'assistant', content: clean || '' });
+      resetInactivityTimer();
 
       if (voiceEnabled && clean) speakText(clean);
 
@@ -1689,11 +1694,24 @@
   };
 
   // ─── LEAD SCORING ────────────────────────────────────────
-  async function scoreLead() {
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    if (autoScored || conversationHistory.length < 2) return;
+    inactivityTimer = setTimeout(() => {
+      if (!autoScored && conversationHistory.length >= 2) {
+        autoScored = true;
+        scoreLead(true);
+      }
+    }, INACTIVITY_MS);
+  }
+
+  async function scoreLead(auto = false) {
     if (conversationHistory.length < 2) {
-      alert('Have a conversation first before scoring the lead.');
+      if (!auto) alert('Have a conversation first before scoring the lead.');
       return;
     }
+    autoScored = true;
+    clearTimeout(inactivityTimer);
     const scoreBtn = document.getElementById('score-btn');
     scoreBtn.disabled = true;
     scoreBtn.textContent = 'Scoring…';
