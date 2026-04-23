@@ -838,6 +838,9 @@
     </div>
 
     <div class="sidebar-footer">
+      <button id="score-btn" onclick="scoreLead()" style="display:block;width:100%;background:var(--gold);border:none;border-radius:10px;padding:11px 16px;font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--forest);cursor:pointer;margin-bottom:16px;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        Score Lead
+      </button>
       <div class="powered-by">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aaca5" stroke-width="2">
           <path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2z"/>
@@ -937,7 +940,8 @@
 
 <script>
   // ─── CONFIG ──────────────────────────────────────────────
-  const WEBHOOK = 'https://n8n.levify.com.pk/webhook/chatbot-rag';
+  const WEBHOOK       = 'https://n8n.levify.com.pk/webhook/chatbot-rag';
+  const SCORE_WEBHOOK = 'https://n8n.levify.com.pk/webhook/score-lead';
 
   const SESSION_ID = (() => {
     try {
@@ -958,6 +962,12 @@
   const inp      = document.getElementById('inp');
   const sendBtn  = document.getElementById('send-btn');
   let   busy     = false;
+
+  // Conversation history for lead scoring
+  const conversationHistory = [];
+  let   leadName  = 'Unknown';
+  let   leadPhone = 'Not provided';
+  let   leadEmail = 'Not provided';
 
   function now() {
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1190,6 +1200,14 @@
     busy = true; sendBtn.disabled = true;
 
     addMessage(text, 'user');
+    conversationHistory.push({ role: 'user', content: text });
+
+    // Simple extraction for name/phone from user messages
+    const phoneMatch = text.match(/(\+92|0)(3\d{2}[-\s]?\d{7}|\d{10,11})/);
+    if (phoneMatch) leadPhone = phoneMatch[0];
+    const nameMatch = text.match(/(?:my name is|mera naam|main|I am|I'm)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i);
+    if (nameMatch) leadName = nameMatch[1];
+
     showTyping();
 
     try {
@@ -1220,6 +1238,7 @@
 
       const clean = stripNote(reply);
       addMessage(clean || 'Got it — one second while I pull that up for you.', 'bot');
+      conversationHistory.push({ role: 'assistant', content: clean || '' });
 
       if (voiceEnabled && clean) speakText(clean);
 
@@ -1580,6 +1599,49 @@
       }
     }
   };
+
+  // ─── LEAD SCORING ────────────────────────────────────────
+  async function scoreLead() {
+    if (conversationHistory.length < 2) {
+      alert('Have a conversation first before scoring the lead.');
+      return;
+    }
+    const scoreBtn = document.getElementById('score-btn');
+    scoreBtn.disabled = true;
+    scoreBtn.textContent = 'Scoring…';
+
+    try {
+      const res = await fetch(SCORE_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: SESSION_ID,
+          messages:  conversationHistory,
+          leadName:  leadName,
+          leadPhone: leadPhone,
+          leadEmail: leadEmail
+        })
+      });
+
+      const d = await res.json();
+      const tier  = d.tier  || 'COLD';
+      const score = d.score || 0;
+      const notified = d.agentNotified ? ' · Agent notified via email' : '';
+      const color = tier === 'HOT' ? '#c8a84b' : tier === 'WARM' ? '#e07a30' : '#9aaca5';
+
+      const notice = document.createElement('div');
+      notice.style.cssText = `background:${color}18;border:1px solid ${color};border-radius:12px;padding:14px 18px;font-size:13px;color:var(--ink);text-align:center;margin:8px 0;`;
+      notice.innerHTML = `<strong style="color:${color}">Lead Score: ${score}/100 — ${tier}</strong><br><span style="color:var(--slate);font-size:12px;">${d.insight || ''}${notified}</span>`;
+      msgList.appendChild(notice);
+      scroll();
+
+    } catch (e) {
+      alert('Scoring failed: ' + e.message);
+    } finally {
+      scoreBtn.disabled  = false;
+      scoreBtn.textContent = 'Score Lead';
+    }
+  }
 
   inp.focus();
 </script>
