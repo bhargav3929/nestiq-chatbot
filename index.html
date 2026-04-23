@@ -441,6 +441,60 @@
 
   .bubble-bot strong { color: var(--forest); font-weight: 600; }
 
+  /* Share Cards */
+  .share-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1px solid var(--parchment);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 8px 0 4px;
+  }
+  .share-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .share-card-icon.type-pdf   { background: #fee2e2; }
+  .share-card-icon.type-video { background: #ede9fe; }
+  .share-card-icon.type-image { background: #d1fae5; }
+  .share-card-info { flex: 1; min-width: 0; }
+  .share-card-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .share-card-type {
+    display: block;
+    font-size: 11px;
+    color: var(--fog);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .share-card-btn {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    background: var(--forest);
+    color: var(--white);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 150ms ease;
+  }
+  .share-card-btn:hover { background: var(--pine); }
+
   /* max-width for bot bubbles slightly wider when tables present */
   .msg-row:not(.user) .msg-content { max-width: 78%; }
   .msg-row.user .msg-content { max-width: 68%; }
@@ -1001,10 +1055,37 @@
   // Supports: headings (##, ###), unordered lists (-, *, •),
   // ordered lists (1.), pipe tables, **bold**, `inline code`,
   // ```fenced code```, --- horizontal rules, paragraphs.
+  function renderShareCard(data) {
+    const type = (data.type || 'pdf').toLowerCase();
+    const url  = data.url   || '#';
+    const title = data.title || 'Document';
+    const labels = { pdf: 'PDF Document', video: 'Video', image: 'Image' };
+    const label  = labels[type] || 'File';
+    const btnTxt = type === 'video' ? 'Watch' : 'View';
+    const icons  = {
+      pdf:   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
+      video: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>',
+      image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
+    };
+    const safeUrl   = url.replace(/"/g, '&quot;');
+    const safeTitle = title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<div class="share-card"><div class="share-card-icon type-${type}">${icons[type] || icons.pdf}</div><div class="share-card-info"><span class="share-card-title">${safeTitle}</span><span class="share-card-type">${label}</span></div><a class="share-card-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${btnTxt}</a></div>`;
+  }
+
   function formatBotMarkdown(raw) {
     if (!raw) return '';
 
-    let text = escapeHtml(raw.trim());
+    // Extract [SHARE:{...}] tags before HTML escaping so JSON isn't corrupted
+    const shareCards = [];
+    let processedRaw = raw.replace(/\[SHARE:(\{[^\]]+\})\]/g, (_, json) => {
+      try {
+        const data = JSON.parse(json);
+        shareCards.push(data);
+        return ' SC' + (shareCards.length - 1) + ' ';
+      } catch(e) { return ''; }
+    });
+
+    let text = escapeHtml(processedRaw.trim());
 
     // Fenced code blocks — protect before line-by-line parsing
     const codeBlocks = [];
@@ -1112,6 +1193,12 @@
 
     // Restore fenced code blocks
     html = html.replace(/\u0000CB(\d+)\u0000/g, (_, idx) => codeBlocks[+idx] || '');
+
+    // Restore share cards — placeholder may be wrapped in <p> by the block parser
+    if (shareCards.length) {
+      html = html.replace(/<p>\s*SC(\d+)\s*<\/p>/g, (_, idx) => renderShareCard(shareCards[+idx]) || '');
+      html = html.replace(/\bSC(\d+)\b/g, (_, idx) => renderShareCard(shareCards[+idx]) || '');
+    }
 
     return html;
   }
@@ -1455,6 +1542,7 @@
 
   function cleanForSpeech(text) {
     return (text || '')
+      .replace(/\[SHARE:\{[^\]]+\}\]/g, '')           // drop share tags
       .replace(/```[\s\S]*?```/g, ' ')              // drop fenced code
       .replace(/^\s*\|.*\|\s*$/gm, ' ')             // drop table rows
       .replace(/^#{1,6}\s+/gm, '')                  // heading markers
