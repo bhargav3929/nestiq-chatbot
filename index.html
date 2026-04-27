@@ -495,6 +495,366 @@
   }
   .share-card-btn:hover { background: var(--pine); }
 
+  /* ── ENHANCED SHARE CARDS (image / video) ── */
+  .share-media-card {
+    border: 1px solid var(--parchment);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 8px 0 4px;
+    background: var(--white);
+  }
+
+  .share-img-link {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    max-height: 220px;
+  }
+
+  .share-img-preview {
+    width: 100%;
+    height: auto;
+    max-height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .share-img-link:hover .share-img-preview { transform: scale(1.03); }
+
+  .share-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,61,46,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .share-img-link:hover .share-img-overlay { background: rgba(10,61,46,0.2); }
+
+  .share-img-zoom {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(10,61,46,0.75);
+    padding: 6px 14px;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+
+  .share-img-link:hover .share-img-zoom { opacity: 1; transform: translateY(0); }
+
+  .share-media-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-top: 1px solid var(--parchment);
+  }
+
+  .share-media-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 10px;
+  }
+
+  .share-video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    background: #0a0a0b;
+  }
+
+  .share-video-wrapper iframe,
+  .share-video-wrapper video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* ── ADMIN PANEL ── */
+  .admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,61,46,0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .admin-overlay.open { opacity: 1; pointer-events: all; }
+
+  .admin-panel {
+    width: 460px;
+    max-width: 100vw;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+  }
+
+  .admin-overlay.open .admin-panel { transform: translateX(0); }
+
+  .admin-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--forest);
+  }
+
+  .admin-header-left { flex: 1; }
+  .admin-header-title { font-family: var(--font-head); font-size: 17px; color: var(--white); }
+  .admin-header-sub { font-size: 11px; color: var(--mist); opacity: 0.7; margin-top: 2px; }
+
+  .admin-close-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .admin-close-btn:hover { background: rgba(255,255,255,0.12); }
+  .admin-close-btn svg { width: 14px; height: 14px; }
+
+  .admin-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--parchment) transparent;
+  }
+
+  .admin-body::-webkit-scrollbar { width: 4px; }
+  .admin-body::-webkit-scrollbar-thumb { background: var(--parchment); border-radius: 2px; }
+
+  .admin-add-form {
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 24px;
+  }
+
+  .admin-form-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 14px;
+  }
+
+  .admin-field { margin-bottom: 10px; }
+
+  .admin-field label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--fog);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .admin-field input,
+  .admin-field select {
+    width: 100%;
+    padding: 9px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1.5px solid var(--parchment);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .admin-field input:focus,
+  .admin-field select:focus { border-color: var(--sage); }
+
+  .admin-add-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--forest);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 4px;
+  }
+
+  .admin-add-btn:hover { background: var(--leaf); }
+  .admin-add-btn:disabled { background: var(--parchment); color: var(--fog); cursor: not-allowed; }
+
+  .media-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .media-section-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--fog);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .media-count-badge {
+    font-size: 11px;
+    background: var(--mist);
+    color: var(--forest);
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .media-list-items { display: flex; flex-direction: column; gap: 8px; }
+
+  .media-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    background: var(--cream);
+    border: 1px solid var(--parchment);
+    border-radius: 10px;
+    transition: border-color 0.15s;
+  }
+
+  .media-item:hover { border-color: rgba(61,184,122,0.4); }
+
+  .media-thumb {
+    width: 44px; height: 36px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background: var(--parchment);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .media-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+
+  .media-item-info { flex: 1; min-width: 0; }
+
+  .media-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .media-item-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+
+  .type-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 1px 7px;
+    border-radius: 5px;
+  }
+
+  .type-badge.image { background: #d1fae5; color: #059669; }
+  .type-badge.video { background: #ede9fe; color: #7c3aed; }
+  .type-badge.pdf   { background: #fee2e2; color: #dc2626; }
+  .type-badge.brochure { background: #fef3c7; color: #d97706; }
+  .type-badge.doc   { background: #e0f2fe; color: #0284c7; }
+
+  .media-tags-text {
+    font-size: 11px;
+    color: var(--fog);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+  }
+
+  .media-delete-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--parchment);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .media-delete-btn:hover { background: #fee2e2; border-color: #fca5a5; }
+  .media-delete-btn svg { width: 12px; height: 12px; }
+
+  .media-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--fog);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .admin-feedback {
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    text-align: center;
+    display: none;
+  }
+
+  .admin-feedback.success { display: block; background: #d1fae5; color: #059669; }
+  .admin-feedback.error   { display: block; background: #fee2e2; color: #dc2626; }
+
+  .admin-btn {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--parchment);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .admin-btn:hover { background: var(--cream); border-color: var(--sage); }
+  .admin-btn svg { width: 15px; height: 15px; }
+
   /* max-width for bot bubbles slightly wider when tables present */
   .msg-row:not(.user) .msg-content { max-width: 78%; }
   .msg-row.user .msg-content { max-width: 68%; }
@@ -930,6 +1290,11 @@
           </svg>
           <span>Voice</span>
         </div>
+        <button class="admin-btn" onclick="openAdmin()" title="Media Library">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+        </button>
         <div class="groq-badge">Online</div>
       </div>
     </div>
@@ -990,6 +1355,66 @@
     </div>
 
   </main>
+</div>
+
+<!-- ADMIN MEDIA PANEL -->
+<div class="admin-overlay" id="admin-overlay" onclick="closeAdminOnBackdrop(event)">
+  <div class="admin-panel" id="admin-panel">
+
+    <div class="admin-header">
+      <div class="admin-header-left">
+        <div class="admin-header-title">Media Library</div>
+        <div class="admin-header-sub">Property photos, videos &amp; documents</div>
+      </div>
+      <button class="admin-close-btn" onclick="closeAdmin()" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="admin-body">
+      <div class="admin-feedback" id="admin-feedback"></div>
+
+      <!-- Add document form -->
+      <div class="admin-add-form">
+        <div class="admin-form-title">Add New Document</div>
+        <div class="admin-field">
+          <label>Title</label>
+          <input type="text" id="media-title" placeholder="e.g. Master Plan – Block A">
+        </div>
+        <div class="admin-field">
+          <label>Type</label>
+          <select id="media-type">
+            <option value="image">Photo / Image</option>
+            <option value="video">Video</option>
+            <option value="pdf">PDF</option>
+            <option value="brochure">Brochure</option>
+            <option value="doc">Document</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label>URL</label>
+          <input type="url" id="media-url" placeholder="https://…">
+        </div>
+        <div class="admin-field">
+          <label>Tags (comma-separated)</label>
+          <input type="text" id="media-tags" placeholder="master-plan, block-a, exterior">
+        </div>
+        <button class="admin-add-btn" id="admin-add-btn" onclick="addMedia()">Add to Library</button>
+      </div>
+
+      <!-- Media list -->
+      <div class="media-section-header">
+        <span class="media-section-label">Library</span>
+        <span class="media-count-badge" id="media-count">0</span>
+      </div>
+      <div class="media-list-items" id="media-list">
+        <div class="media-empty">Loading library…</div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1060,19 +1485,45 @@
   // ```fenced code```, --- horizontal rules, paragraphs.
   function renderShareCard(data) {
     const type = (data.type || 'pdf').toLowerCase();
-    const url  = data.url   || '#';
-    const title = data.title || 'Document';
-    const labels = { pdf: 'PDF Document', video: 'Video', image: 'Image' };
-    const label  = labels[type] || 'File';
-    const btnTxt = type === 'video' ? 'Watch' : 'View';
-    const icons  = {
-      pdf:   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
-      video: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>',
-      image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
-    };
-    const safeUrl   = url.replace(/"/g, '&quot;');
-    const safeTitle = title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return `<div class="share-card"><div class="share-card-icon type-${type}">${icons[type] || icons.pdf}</div><div class="share-card-info"><span class="share-card-title">${safeTitle}</span><span class="share-card-type">${label}</span></div><a class="share-card-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${btnTxt}</a></div>`;
+    if (type === 'image') return _shareImageCard(data);
+    if (type === 'video') return _shareVideoCard(data);
+    return _shareFileCard(data);
+  }
+
+  function _shareImageCard(data) {
+    const url   = data.url || '#';
+    const title = escapeHtml(data.title || 'Property Photo');
+    const safeUrl = url.replace(/"/g, '&quot;');
+    return `<div class="share-media-card"><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="share-img-link"><img class="share-img-preview" src="${safeUrl}" alt="${title}" loading="lazy" onerror="this.style.opacity='0.3'"><div class="share-img-overlay"><span class="share-img-zoom">View Full Size ↗</span></div></a><div class="share-media-footer"><span class="share-media-title">${title}</span><a class="share-card-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Open</a></div></div>`;
+  }
+
+  function _shareVideoCard(data) {
+    const url   = data.url || '#';
+    const title = escapeHtml(data.title || 'Property Video');
+    const safeUrl = url.replace(/"/g, '&quot;');
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    const embedHtml = ytMatch
+      ? `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+      : `<video controls preload="metadata"><source src="${safeUrl}"><p>Your browser doesn't support video playback.</p></video>`;
+    return `<div class="share-media-card"><div class="share-video-wrapper">${embedHtml}</div><div class="share-media-footer"><span class="share-media-title">${title}</span><a class="share-card-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Watch</a></div></div>`;
+  }
+
+  function _shareFileCard(data) {
+    const type  = (data.type || 'pdf').toLowerCase();
+    const url   = data.url || '#';
+    const title = escapeHtml(data.title || 'Document');
+    const labels   = { pdf: 'PDF Document', brochure: 'Brochure', doc: 'Document', video: 'Video', image: 'Image' };
+    const iconStroke = { pdf: '#dc2626', brochure: '#d97706', doc: '#0284c7', video: '#7c3aed', image: '#059669' };
+    const iconBg   = { pdf: '#fee2e2', brochure: '#fef3c7', doc: '#e0f2fe', video: '#ede9fe', image: '#d1fae5' };
+    const safeUrl  = url.replace(/"/g, '&quot;');
+    const stroke   = iconStroke[type] || '#6b7280';
+    const bg       = iconBg[type]     || '#f3f4f6';
+    const icon = (type === 'video')
+      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`
+      : (type === 'image')
+      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+    return `<div class="share-card"><div class="share-card-icon type-${type}" style="background:${bg}">${icon}</div><div class="share-card-info"><span class="share-card-title">${title}</span><span class="share-card-type">${labels[type] || 'File'}</span></div><a class="share-card-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${type === 'video' ? 'Watch' : 'View'}</a></div>`;
   }
 
   function formatBotMarkdown(raw) {
@@ -1757,6 +2208,152 @@
   }
 
   inp.focus();
+
+  // ─── MEDIA LIBRARY ADMIN ─────────────────────────────────
+  const MEDIA_LIST_WEBHOOK   = 'https://n8n.levify.com.pk/webhook/media-list';
+  const MEDIA_MANAGE_WEBHOOK = 'https://n8n.levify.com.pk/webhook/media-manage';
+
+  let mediaLibrary = [];
+
+  function openAdmin() {
+    document.getElementById('admin-overlay').classList.add('open');
+    loadMedia();
+  }
+
+  function closeAdmin() {
+    document.getElementById('admin-overlay').classList.remove('open');
+  }
+
+  function closeAdminOnBackdrop(e) {
+    if (e.target === document.getElementById('admin-overlay')) closeAdmin();
+  }
+
+  async function loadMedia() {
+    var list = document.getElementById('media-list');
+    list.innerHTML = '<div class="media-empty" style="opacity:0.6">Loading…</div>';
+    try {
+      var res = await fetch(MEDIA_LIST_WEBHOOK);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var data = await res.json();
+      mediaLibrary = Array.isArray(data) ? data : (data.items || data.records || []);
+      renderMediaList();
+    } catch(e) {
+      list.innerHTML = '<div class="media-empty">Could not load the library.<br>Check your n8n workflow is active.</div>';
+    }
+  }
+
+  function _getMediaField(item, key) {
+    return item[key] || (item.fields && item.fields[key.charAt(0).toUpperCase() + key.slice(1)]) || '';
+  }
+
+  function renderMediaList() {
+    var list  = document.getElementById('media-list');
+    var count = document.getElementById('media-count');
+    count.textContent = mediaLibrary.length;
+
+    if (!mediaLibrary.length) {
+      list.innerHTML = '<div class="media-empty">No documents yet.<br>Add your first one above.</div>';
+      return;
+    }
+
+    list.innerHTML = mediaLibrary.map(function(item, idx) {
+      var type  = (_getMediaField(item, 'type') || 'pdf').toLowerCase();
+      var title = escapeHtml(_getMediaField(item, 'title') || 'Untitled');
+      var url   = _getMediaField(item, 'url') || '#';
+      var tags  = _getMediaField(item, 'tags') || '';
+      var id    = item.id || String(idx);
+      var safeUrl = url.replace(/"/g, '&quot;');
+
+      var thumbHtml = (type === 'image')
+        ? '<img src="' + safeUrl + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+        : ('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--fog)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+            + (type === 'video'
+                ? '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>'
+                : (type === 'pdf' || type === 'brochure')
+                ? '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'
+                : '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>')
+            + '</svg>');
+
+      return '<div class="media-item">'
+        + '<div class="media-thumb">' + thumbHtml + '</div>'
+        + '<div class="media-item-info">'
+        +   '<div class="media-item-name">' + title + '</div>'
+        +   '<div class="media-item-meta">'
+        +     '<span class="type-badge ' + escapeHtml(type) + '">' + escapeHtml(type) + '</span>'
+        +     (tags ? '<span class="media-tags-text">' + escapeHtml(tags) + '</span>' : '')
+        +   '</div>'
+        + '</div>'
+        + '<button class="media-delete-btn" onclick="deleteMedia(\'' + escapeHtml(id) + '\')" title="Remove">'
+        +   '<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        +   '<polyline points="3 6 5 6 21 6"/>'
+        +   '<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>'
+        +   '<path d="M10 11v6"/><path d="M14 11v6"/>'
+        +   '<path d="M9 6V4h6v2"/>'
+        +   '</svg>'
+        + '</button>'
+        + '</div>';
+    }).join('');
+  }
+
+  function showAdminMsg(text, type) {
+    var fb = document.getElementById('admin-feedback');
+    fb.className = 'admin-feedback ' + type;
+    fb.textContent = text;
+    setTimeout(function() { fb.className = 'admin-feedback'; }, 4000);
+  }
+
+  async function addMedia() {
+    var title = document.getElementById('media-title').value.trim();
+    var type  = document.getElementById('media-type').value;
+    var url   = document.getElementById('media-url').value.trim();
+    var tags  = document.getElementById('media-tags').value.trim();
+
+    if (!title || !url) { showAdminMsg('Title and URL are required.', 'error'); return; }
+
+    var btn = document.getElementById('admin-add-btn');
+    btn.disabled = true; btn.textContent = 'Adding…';
+
+    try {
+      var res = await fetch(MEDIA_MANAGE_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', title: title, type: type, url: url, tags: tags })
+      });
+      var d = await res.json().catch(function() { return {}; });
+      var newId = (d.id || d.record_id || d.recordId || 'local_' + Date.now());
+      mediaLibrary.unshift({ id: newId, title: title, type: type, url: url, tags: tags });
+      renderMediaList();
+      document.getElementById('media-title').value = '';
+      document.getElementById('media-url').value   = '';
+      document.getElementById('media-tags').value  = '';
+      showAdminMsg('Document added successfully!', 'success');
+    } catch(e) {
+      showAdminMsg('Failed to add. Check your n8n connection.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Add to Library';
+    }
+  }
+
+  async function deleteMedia(id) {
+    if (!confirm('Remove this document from the library?')) return;
+
+    var idx = mediaLibrary.findIndex(function(item, i) {
+      return (item.id || String(i)) === String(id);
+    });
+
+    try {
+      await fetch(MEDIA_MANAGE_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', id: id })
+      });
+      if (idx > -1) mediaLibrary.splice(idx, 1);
+      renderMediaList();
+      showAdminMsg('Document removed.', 'success');
+    } catch(e) {
+      showAdminMsg('Failed to remove. Try again.', 'error');
+    }
+  }
 </script>
 
 </body>
