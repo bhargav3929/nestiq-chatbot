@@ -841,6 +841,127 @@
   .admin-feedback.success { display: block; background: #d1fae5; color: #059669; }
   .admin-feedback.error   { display: block; background: #fee2e2; color: #dc2626; }
 
+  /* ── ADMIN TABS + BRAIN ── */
+  .admin-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--parchment);
+    margin: -20px -24px 18px;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+  .admin-tab {
+    padding: 12px 18px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--fog);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+    font-family: var(--font-body);
+  }
+  .admin-tab.active { color: var(--forest); border-bottom-color: var(--forest); }
+  .admin-tab:hover:not(.active) { color: var(--ink); }
+  .admin-section { display: none; }
+  .admin-section.active { display: block; }
+
+  .brain-current {
+    background: var(--cream);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--fog);
+    margin-bottom: 14px;
+    border: 1px solid var(--parchment);
+    line-height: 1.5;
+  }
+  .brain-current strong {
+    color: var(--ink);
+    font-weight: 600;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+  }
+  .brain-current .brain-edited {
+    display: block;
+    font-size: 10.5px;
+    margin-top: 4px;
+    opacity: 0.8;
+  }
+
+  .brain-search {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13px;
+    border: 1.5px solid var(--parchment);
+    border-radius: 8px;
+    outline: none;
+    margin-bottom: 8px;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--white);
+    transition: border-color 0.15s;
+  }
+  .brain-search:focus { border-color: var(--sage); }
+
+  .brain-model-list {
+    width: 100%;
+    height: 180px;
+    padding: 6px;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    font-size: 12px;
+    color: var(--ink);
+    background: var(--white);
+    border: 1.5px solid var(--parchment);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .brain-model-list:focus { border-color: var(--sage); }
+
+  .brain-prompt-area {
+    width: 100%;
+    min-height: 280px;
+    max-height: 60vh;
+    padding: 12px 14px;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--white);
+    border: 1.5px solid var(--parchment);
+    border-radius: 10px;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+  .brain-prompt-area:focus { border-color: var(--sage); }
+
+  .brain-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .brain-action-btn {
+    flex: 1;
+    padding: 10px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1.5px solid var(--parchment);
+    background: var(--white);
+    color: var(--ink);
+  }
+  .brain-action-btn.primary { background: var(--forest); color: var(--white); border-color: var(--forest); }
+  .brain-action-btn.primary:hover { background: var(--leaf); border-color: var(--leaf); }
+  .brain-action-btn.primary:disabled { background: var(--parchment); color: var(--fog); border-color: var(--parchment); cursor: not-allowed; }
+  .brain-action-btn.ghost:hover { border-color: var(--sage); color: var(--forest); }
+
   .admin-btn {
     width: 34px; height: 34px;
     border-radius: 9px;
@@ -1363,8 +1484,8 @@
 
     <div class="admin-header">
       <div class="admin-header-left">
-        <div class="admin-header-title">Media Library</div>
-        <div class="admin-header-sub">Property photos, videos &amp; documents</div>
+        <div class="admin-header-title">Admin Panel</div>
+        <div class="admin-header-sub">Brain configuration &amp; media library</div>
       </div>
       <button class="admin-close-btn" onclick="closeAdmin()" title="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1374,6 +1495,40 @@
     </div>
 
     <div class="admin-body">
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="brain" onclick="setAdminTab('brain')">Brain</button>
+        <button class="admin-tab" data-tab="media" onclick="setAdminTab('media')">Media Library</button>
+      </div>
+
+      <!-- BRAIN SECTION -->
+      <div class="admin-section active" id="admin-section-brain">
+        <div class="admin-feedback" id="brain-feedback"></div>
+
+        <div class="admin-add-form">
+          <div class="admin-form-title">LLM Model</div>
+          <div class="brain-current">
+            Active model: <strong id="brain-current-model">loading…</strong>
+            <span class="brain-edited" id="brain-updated"></span>
+          </div>
+          <div class="admin-field">
+            <input type="text" class="brain-search" id="brain-model-search" placeholder="Search models — try 'claude', 'gemini', 'gpt'…" oninput="filterBrainModels()">
+            <select class="brain-model-list" id="brain-model-select" size="8"></select>
+          </div>
+          <button class="brain-action-btn primary" id="brain-save-model-btn" onclick="saveBrainModel()">Save model</button>
+        </div>
+
+        <div class="admin-add-form">
+          <div class="admin-form-title">System Prompt</div>
+          <textarea class="brain-prompt-area" id="brain-prompt" placeholder="Loading prompt…" spellcheck="false"></textarea>
+          <div class="brain-row">
+            <button class="brain-action-btn ghost" onclick="resetBrainConfig()">Reset to default</button>
+            <button class="brain-action-btn primary" id="brain-save-prompt-btn" onclick="saveBrainPrompt()">Save prompt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIA SECTION -->
+      <div class="admin-section" id="admin-section-media">
       <div class="admin-feedback" id="admin-feedback"></div>
 
       <!-- Add document form -->
@@ -1413,6 +1568,7 @@
         <div class="media-empty">Loading library…</div>
       </div>
 
+      </div>
     </div>
   </div>
 </div>
@@ -2218,6 +2374,16 @@
   function openAdmin() {
     document.getElementById('admin-overlay').classList.add('open');
     loadMedia();
+    loadBrain();
+  }
+
+  function setAdminTab(name) {
+    document.querySelectorAll('.admin-tab').forEach(function(t) {
+      t.classList.toggle('active', t.dataset.tab === name);
+    });
+    document.querySelectorAll('.admin-section').forEach(function(s) {
+      s.classList.toggle('active', s.id === 'admin-section-' + name);
+    });
   }
 
   function closeAdmin() {
@@ -2331,6 +2497,140 @@
       showAdminMsg('Failed to add. Check your n8n connection.', 'error');
     } finally {
       btn.disabled = false; btn.textContent = 'Add to Library';
+    }
+  }
+
+  // ─── BRAIN CONFIG (model + system prompt) ───────────────
+  const BRAIN_CONFIG_URL = 'https://n8n.levify.com.pk/webhook/chatbot-config';
+  const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models';
+
+  let brainAllModels = [];
+  let brainCurrentModel = '';
+
+  function showBrainMsg(text, type) {
+    var fb = document.getElementById('brain-feedback');
+    fb.className = 'admin-feedback ' + type;
+    fb.textContent = text;
+    setTimeout(function() { fb.className = 'admin-feedback'; }, 4500);
+  }
+
+  async function loadBrain() {
+    try {
+      const promptRes = await fetch(BRAIN_CONFIG_URL, { cache: 'no-store' });
+      if (!promptRes.ok) throw new Error('config HTTP ' + promptRes.status);
+      const cfg = await promptRes.json();
+
+      brainCurrentModel = cfg.model || cfg.defaultModel || '';
+      document.getElementById('brain-current-model').textContent = brainCurrentModel || '—';
+      document.getElementById('brain-updated').textContent = cfg.updatedAt
+        ? 'Last edited ' + new Date(cfg.updatedAt).toLocaleString()
+        : 'Default — never edited';
+      document.getElementById('brain-prompt').value = cfg.systemPrompt || cfg.defaultPrompt || '';
+    } catch (e) {
+      showBrainMsg('Failed to load config: ' + e.message, 'error');
+    }
+
+    if (!brainAllModels.length) {
+      try {
+        const mRes = await fetch(OPENROUTER_MODELS_URL);
+        if (!mRes.ok) throw new Error('models HTTP ' + mRes.status);
+        const data = await mRes.json();
+        brainAllModels = ((data && data.data) || [])
+          .map(function(m) { return { id: m.id, name: m.name || m.id }; })
+          .sort(function(a, b) { return a.id.localeCompare(b.id); });
+      } catch (e) {
+        showBrainMsg('Could not fetch model list: ' + e.message, 'error');
+      }
+    }
+    renderBrainModelList(brainAllModels);
+  }
+
+  function renderBrainModelList(list) {
+    var sel = document.getElementById('brain-model-select');
+    if (!list.length) {
+      sel.innerHTML = '<option disabled>No models loaded</option>';
+      return;
+    }
+    sel.innerHTML = list.map(function(m) {
+      var sel = m.id === brainCurrentModel ? ' selected' : '';
+      var label = m.id + (m.name && m.name !== m.id ? '  —  ' + m.name : '');
+      return '<option value="' + escapeHtml(m.id) + '"' + sel + '>' + escapeHtml(label) + '</option>';
+    }).join('');
+
+    if (brainCurrentModel) {
+      var idx = list.findIndex(function(m) { return m.id === brainCurrentModel; });
+      if (idx >= 0) sel.selectedIndex = idx;
+    }
+  }
+
+  function filterBrainModels() {
+    var q = document.getElementById('brain-model-search').value.toLowerCase().trim();
+    if (!q) { renderBrainModelList(brainAllModels); return; }
+    var filtered = brainAllModels.filter(function(m) {
+      return m.id.toLowerCase().indexOf(q) >= 0 || (m.name || '').toLowerCase().indexOf(q) >= 0;
+    });
+    renderBrainModelList(filtered);
+  }
+
+  async function saveBrainModel() {
+    var sel = document.getElementById('brain-model-select');
+    var model = sel.value;
+    if (!model) { showBrainMsg('Pick a model first.', 'error'); return; }
+    var btn = document.getElementById('brain-save-model-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      var r = await fetch(BRAIN_CONFIG_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model })
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var data = await r.json();
+      brainCurrentModel = data.model;
+      document.getElementById('brain-current-model').textContent = brainCurrentModel;
+      document.getElementById('brain-updated').textContent = 'Last edited ' + new Date(data.updatedAt).toLocaleString();
+      showBrainMsg('Saved. The next message uses ' + data.model + '.', 'success');
+    } catch (e) {
+      showBrainMsg('Failed to save: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save model';
+    }
+  }
+
+  async function saveBrainPrompt() {
+    var prompt = document.getElementById('brain-prompt').value;
+    if (!prompt.trim()) { showBrainMsg('Prompt cannot be empty.', 'error'); return; }
+    var btn = document.getElementById('brain-save-prompt-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      var r = await fetch(BRAIN_CONFIG_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ systemPrompt: prompt })
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var data = await r.json();
+      document.getElementById('brain-updated').textContent = 'Last edited ' + new Date(data.updatedAt).toLocaleString();
+      showBrainMsg('Prompt saved. Next message uses the new prompt.', 'success');
+    } catch (e) {
+      showBrainMsg('Failed to save: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save prompt';
+    }
+  }
+
+  async function resetBrainConfig() {
+    if (!confirm('Reset model and system prompt to factory defaults? Current edits will be discarded.')) return;
+    try {
+      await fetch(BRAIN_CONFIG_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reset: true })
+      });
+      await loadBrain();
+      showBrainMsg('Reset to factory defaults.', 'success');
+    } catch (e) {
+      showBrainMsg('Reset failed: ' + e.message, 'error');
     }
   }
 
